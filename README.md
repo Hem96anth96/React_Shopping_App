@@ -1,8 +1,8 @@
 Clone the repository: git clone https://github.com/Hem96anth96/React_Shopping_App.git
 
-cd React_Shopping_App
-npm install
-npm run start
+cd React_Shopping_App,
+npm install,
+npm run start, access web app from 
 http://localhost:3000
 
 Note: Base code is from https://github.com/saucelabs/sample-app-web, 
