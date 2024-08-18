@@ -1,21 +1,24 @@
-import React, { useEffect, useState } from "react";
-import { withRouter } from "react-router-dom";
-import { isProblemUser, isErrorUser } from "../utils/Credentials";
-import { ROUTES } from "../utils/Constants";
+import React, { useEffect, useState} from "react";
+import { useLocation} from "react-router-dom";
 import { ShoppingCart } from "../utils/shopping-cart";
 import { InventoryData } from "../utils/InventoryData";
+import {InventoryDataLong} from "../utils/InventoryDataLong"
 import HeaderContainer from "../components/HeaderContainer";
 import Button, { BUTTON_SIZES, BUTTON_TYPES } from "../components/Button";
 import SwagLabsFooter from "../components/Footer";
 import "./InventoryItem.css";
-import BrokenComponent from "../components/BrokenComponent";
-import { ErrorBoundary } from "@backtrace-labs/react";
 
-const InventoryItem = (props) => {
+
+
+const InventoryItem = () => {
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
-  const { history } = props;
+
+  const location = useLocation();
+
+  
+
   // Get our queryparams now
   const queryParams = new URLSearchParams(window.location.search);
   let inventoryId = -1;
@@ -25,94 +28,66 @@ const InventoryItem = (props) => {
   if (queryParams.has("id")) {
     inventoryId = parseInt(queryParams.get("id"));
   }
+ 
+  if(location.state?.hint==="long"){
+    if (inventoryId >= 0 && InventoryDataLong.length > inventoryId) {
+      item = InventoryDataLong[inventoryId];
+  }  else {
+    item = {
+      name: "ITEM NOT FOUND",
+      desc: `No Description Found`,
+      image_url: "sl-404.jpg",
+      price: "UnKnown",
+    };
+  }
+} else{
 
   if (inventoryId >= 0 && InventoryData.length > inventoryId) {
     item = InventoryData[inventoryId];
   } else {
     item = {
       name: "ITEM NOT FOUND",
-      desc: `We're sorry, but your call could not be completed as dialled.
-          Please check your number, and try your call again.
-          If you are in need of assistance, please dial 0 to be connected with an operator.
-          This is a recording.
-          4 T 1.`,
+      desc: `No Description Found`,
       image_url: "sl-404.jpg",
-      price: "√-1",
+      price: "UnKnown",
     };
   }
+}
+  
+  
+  // item.id = inventoryId; not needed they are of sam value anyways
 
-  item.id = inventoryId;
+const [imageSrc, setImageSrc] = useState(null);
+
+useEffect(() => {
+  const loadImage = async () => {
+    const image = await import(`../assets/img/${item.image_url}`);
+    setImageSrc(image.default);
+  };
+
+  loadImage();
+}, [item.image_url]);
+
+
 
   const [itemInCart, setItemInCart] = useState(
     ShoppingCart.isItemInCart(inventoryId)
   );
-  /**
-   * @TODO:
-   * This can't be tested yet because enzyme currently doesn't support ReactJS17,
-   * see https://github.com/enzymejs/enzyme/issues/2429.
-   * This means we can't fully mount the component and test all rendered components
-   * and functions
-   */
-  /* istanbul ignore next */
-  const goBack = () => {
-    history.push(ROUTES.INVENTORY);
-  };
-  /**
-   * @TODO:
-   * This can't be tested yet because enzyme currently doesn't support ReactJS17,
-   * see https://github.com/enzymejs/enzyme/issues/2429.
-   * This means we can't fully mount the component and test all rendered components
-   * and functions
-   */
-  /* istanbul ignore next */
-  const addToCart = (itemId) => {
-    if (isProblemUser()) {
-      // Bail out now, don't add to cart if the item ID is odd
-      if (itemId % 2 === 1) {
-        return;
-      }
-    } else if (isErrorUser()) {
-      // Throw an exception. This will be reported to Backtrace
-      if (itemId % 2 === 1) {
-        throw new Error("Failed to add item to the cart.");
-      }
-    }
 
+ 
+  const addToCart = (itemId) => {
+    
     ShoppingCart.addItem(itemId);
     setItemInCart(true);
   };
-  /**
-   * @TODO:
-   * This can't be tested yet because enzyme currently doesn't support ReactJS17,
-   * see https://github.com/enzymejs/enzyme/issues/2429.
-   * This means we can't fully mount the component and test all rendered components
-   * and functions
-   */
-  /* istanbul ignore next */
+ 
   const removeFromCart = (itemId) => {
-    if (isProblemUser()) {
-      // Bail out now, don't remove from cart if the item ID is even
-      if (itemId % 2 === 0) {
-        return;
-      }
-    } else if (isErrorUser()) {
-      // Throw an exception. This will be reported to Backtrace
-      if (itemId % 2 === 0) {
-        throw new Error("Failed to remove item from cart.");
-      }
-    }
+
 
     ShoppingCart.removeItem(itemId);
     setItemInCart(false);
   };
-  /**
-   * @TODO:
-   * This can't be tested yet because enzyme currently doesn't support ReactJS17,
-   * see https://github.com/enzymejs/enzyme/issues/2429.
-   * This means we can't fully mount the component and test all rendered components
-   * and functions
-   */
-  /* istanbul ignore next */
+ 
   const ButtonType = ({ id, item, itemInCart }) => {
     const label = itemInCart ? "Remove" : "Add to cart";
     const onClick = itemInCart ? () => removeFromCart(id) : () => addToCart(id);
@@ -136,15 +111,7 @@ const InventoryItem = (props) => {
       <div id="contents_wrapper">
         <HeaderContainer
           customClass="inventory_details"
-          secondaryLeftComponent={
-            <Button
-              customClass="inventory_details_back_button"
-              label="Back to products"
-              onClick={goBack}
-              type={BUTTON_TYPES.BACK}
-              testId="back-to-products"
-            />
-          }
+       
         />
         <div
           id="inventory_item_container"
@@ -160,51 +127,29 @@ const InventoryItem = (props) => {
                 <img
                   alt={item.name}
                   className="inventory_details_img"
-                  src={require(`../assets/img/${item.image_url}`).default}
-                  data-test={`item-${item.name
-                    .replace(/\s+/g, "-")
-                    .toLowerCase()}-img`}
+                  src={imageSrc}
+      
                 />
               </div>
               <div className="inventory_details_desc_container">
                 <div
                   className="inventory_details_name large_size"
-                  data-test="inventory-item-name"
+                  
                 >
                   {item.name}
                 </div>
-
-                {/*
-                This error boundary will catch any failing renders and display fallback if anything fails inside.
-                The error will also be reported to Backtrace.
-                */}
-                <ErrorBoundary
-                  name="description-boundary"
-                  fallback={
+                
+                
                     <div
                       className="inventory_details_desc large_size"
-                      data-test="inventory-item-desc"
-                    >
-                      A description should be here, but it failed to render!
-                      This error has been reported to Backtrace.
-                    </div>
-                  }
-                >
-                  {!isErrorUser() ? (
-                    <div
-                      className="inventory_details_desc large_size"
-                      data-test="inventory-item-desc"
+                      
                     >
                       {item.desc}
                     </div>
-                  ) : (
-                    <BrokenComponent />
-                  )}
-                </ErrorBoundary>
-
+                 
                 <div
                   className="inventory_details_price"
-                  data-test="inventory-item-price"
+                  
                 >
                   ${item.price}
                 </div>
@@ -223,4 +168,4 @@ const InventoryItem = (props) => {
   );
 };
 
-export default withRouter(InventoryItem);
+export default InventoryItem;

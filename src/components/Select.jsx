@@ -1,60 +1,31 @@
 import React from "react";
-import PropTypes from "prop-types";
 import "./Select.css";
 
-const Select = ({ activeOption, onChange, options, testId }) => {
+const Select = ({ activeOption, onChange, options}) => {
   return (
     <span className="select_container">
       <span className="active_option" data-test="active-option">
         {
-          options[options.findIndex((option) => option.key === activeOption)]
-            .value
+          options[options.findIndex((option) => option.k === activeOption)]
+            .v
         }
       </span>
       <select
         onChange={onChange}
         className="product_sort_container"
         value={activeOption}
-        {...(testId
-          ? {
-              "data-test": testId,
-            }
-          : {})}
       >
-        {options.map(({ key, value }) => (
-          <option value={key} key={key}>
-            {value}
+        {options.map(({ k, v}) => (
+          <option value={k} key={k}>
+            {v}
           </option>
         ))}
       </select>
     </span>
   );
 };
-Select.propTypes = {
-  /**
-   * The active option key
-   */
-  activeOption: PropTypes.string.isRequired,
-  /**
-   * The on change handler
-   */
-  onChange: PropTypes.func.isRequired,
-  /**
-   * The options
-   */
-  options: PropTypes.arrayOf(
-    PropTypes.shape({
-      key: PropTypes.string.isRequired,
-      value: PropTypes.string.isRequired,
-    })
-  ).isRequired,
-  /**
-   * The test id
-   */
-  testId: PropTypes.string,
-};
-Select.defaultProps = {
-  testId: undefined,
-};
+
+
+
 
 export default Select;

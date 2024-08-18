@@ -1,31 +1,25 @@
-import React, { useEffect, Fragment } from "react";
-import { withRouter } from "react-router-dom";
+import React, { Fragment } from "react";
+import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import "./Login.css";
 import {
-  isLockedOutUser,
   setCredentials,
   verifyCredentials,
 } from "../utils/Credentials";
 import { ROUTES, VALID_USERNAMES, VALID_PASSWORD } from "../utils/Constants";
-import InputError, { INPUT_TYPES } from "../components/InputError";
+import InputError from "../components/InputError";
 import SubmitButton from "../components/SubmitButton";
 import ErrorMessage from "../components/ErrorMessage";
-import { BacktraceClient } from "@backtrace-labs/react";
 
-function Login(props) {
-  const { history, location } = props;
+
+function Login() {
+  
   const [error, setError] = useState("");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-
-  useEffect(() => {
-    if (location.state) {
-      return setError(
-        `You can only access '${location.state.from.pathname}' when you are logged in.`
-      );
-    }
-  }, [location.state]);
+  
+  const navigate = useNavigate();
+ 
 
   const dismissError = () => {
     setError("");
@@ -45,30 +39,17 @@ function Login(props) {
       // If we're here, we have a username and password.
       // Store the username in our cookies.
       setCredentials(username, password);
-      // Catch our locked-out user and bail out
-      if (isLockedOutUser()) {
-        // Send an error with custom attributes to Backtrace
-        BacktraceClient.instance.send(
-          new Error("Locked out user tried to log in."),
-          { username }
-        );
-        return setError("Sorry, this user has been locked out.");
-      }
+      
+     
 
       // Redirect!
-      history.push(ROUTES.INVENTORY);
+      navigate(ROUTES.INVENTORY);
     } else {
-      // Send an error with custom attributes to Backtrace
-      BacktraceClient.instance.send(
-        "Someone tried to login with invalid credentials.",
-        { username }
-      );
+      console.error("Someone tried to login with invalid credentials.", { username });
       return setError(
-        "Username and password do not match any user in this service"
+        "Username and password do not match"
       );
     }
-
-    return "";
   };
 
   const handleUserChange = (evt) => {
@@ -80,8 +61,8 @@ function Login(props) {
   };
 
   return (
-    <div className="login_container">
-      <div className="login_logo">Swag Labs</div>
+    <div className="login_container" autoComplete="on">
+      <div className="login_logo">Family Guy Shop</div>
 
       <div className="login_wrapper" data-test="login-container">
         <div className="login_wrapper-inner">
@@ -90,32 +71,38 @@ function Login(props) {
               <form onSubmit={handleSubmit}>
                 <InputError
                   isError={Boolean(error)}
-                  type={INPUT_TYPES.TEXT}
+                  type="text"
                   value={username}
                   onChange={handleUserChange}
-                  testId="username"
+               
                   placeholder="Username"
                   // Custom
                   id="user-name"
-                  name="user-name"
+                  name="username"
                   autoCorrect="off"
                   autoCapitalize="none"
+                  autoComplete="username"
                 />
                 <InputError
                   isError={Boolean(error)}
-                  type={INPUT_TYPES.PASSWORD}
+                  type="password"
                   value={password}
+                  id="password"
                   onChange={handlePassChange}
                   testId="password"
                   placeholder="Password"
                   // Custom
+                  name="password"
                   autoCorrect="off"
                   autoCapitalize="none"
+                  autoComplete="current-password"
                 />
                 <ErrorMessage
                   isError={Boolean(error)}
                   errorMessage={`Epic sadface: ${error}`}
                   onClick={dismissError}
+                  backgroundColor ="white"
+                  
                 />
                 <SubmitButton
                   // `btn_action` has no style function
@@ -138,7 +125,7 @@ function Login(props) {
               className="login_credentials"
               data-test="login-credentials"
             >
-              <h4>Accepted usernames are:</h4>
+              <h4>Username:</h4>
               {VALID_USERNAMES.map((u, i) => (
                 <Fragment key={i}>
                   {u}
@@ -147,7 +134,7 @@ function Login(props) {
               ))}
             </div>
             <div className="login_password" data-test="login-password">
-              <h4>Password for all users:</h4>
+              <h4>Password:</h4>
               {VALID_PASSWORD}
             </div>
           </div>
@@ -157,4 +144,4 @@ function Login(props) {
   );
 }
 
-export default withRouter(Login);
+export default Login;

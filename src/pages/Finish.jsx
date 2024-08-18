@@ -1,14 +1,28 @@
-import React from "react";
-import { withRouter } from "react-router-dom";
+import React, {useEffect} from "react";
+import {useNavigate, useLocation } from "react-router-dom";
 import Checkmark from "../assets/img/checkmark.png";
 import SwagLabsFooter from "../components/Footer";
 import HeaderContainer from "../components/HeaderContainer";
-import PropTypes from "prop-types";
 import Button, { BUTTON_SIZES } from "../components/Button";
 import { ROUTES } from "../utils/Constants";
 import "./Finish.css";
 
-const Finish = ({ history }) => {
+const Finish = () => {
+
+  const navigate = useNavigate();
+  const location = useLocation();
+
+
+  useEffect(() => {
+    if (!location.state) {
+      // If state is not available, redirect to the checkout step one page
+      navigate(ROUTES.CHECKOUT_STEP_ONE);
+    }
+  }, [location.state, navigate]);
+
+
+ const userName = location.state?.userName ;
+
   return (
     <div id="page_wrapper" className="page_wrapper">
       <div id="contents_wrapper">
@@ -25,17 +39,17 @@ const Finish = ({ history }) => {
             data-test="pony-express"
           />
           <h2 className="complete-header" data-test="complete-header">
-            Thank you for your order!
+            Hi {userName}, Thank you for your order!
           </h2>
           <div className="complete-text" data-test="complete-text">
-            Your order has been dispatched, and will arrive just as fast as the
-            pony can get there!
+            Your order has been dispatched, and will arrive ASAP!
           </div>
           <Button
             label="Back Home"
-            onClick={() => history.push(ROUTES.INVENTORY)}
+            onClick={() => navigate(ROUTES.INVENTORY)}
             size={BUTTON_SIZES.SMALL}
             testId="back-to-products"
+            id="back-to-products"
           />
         </div>
       </div>
@@ -43,13 +57,6 @@ const Finish = ({ history }) => {
     </div>
   );
 };
-Finish.propTypes = {
-  /**
-   * The history
-   */
-  history: PropTypes.shape({
-    push: PropTypes.func.isRequired,
-  }).isRequired,
-};
 
-export default withRouter(Finish);
+
+export default Finish;

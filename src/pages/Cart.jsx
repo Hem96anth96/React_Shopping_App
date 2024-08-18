@@ -1,5 +1,5 @@
 import React from "react";
-import { withRouter } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { ROUTES } from "../utils/Constants";
 import { ShoppingCart } from "../utils/shopping-cart";
 import { InventoryData } from "../utils/InventoryData";
@@ -8,13 +8,12 @@ import SwagLabsFooter from "../components/Footer";
 import HeaderContainer from "../components/HeaderContainer";
 import Button, { BUTTON_SIZES, BUTTON_TYPES } from "../components/Button";
 import "./Cart.css";
-import { isVisualUser } from "../utils/Credentials";
 
-const Cart = ({ history }) => {
+
+const Cart = () => {
   const contents = ShoppingCart.getCartContents();
-  const buttonClass = `checkout_button ${
-    isVisualUser() ? "btn_visual_failure" : ""
-  }`;
+  const navigate = useNavigate();
+  const buttonClass = `checkout_button`;
 
   return (
     <div id="page_wrapper" className="page_wrapper">
@@ -45,7 +44,7 @@ const Cart = ({ history }) => {
                 label="Continue Shopping"
                 onClick={(evt) => {
                   evt.preventDefault();
-                  history.push(ROUTES.INVENTORY);
+                  navigate(ROUTES.INVENTORY);
                 }}
                 size={BUTTON_SIZES.MEDIUM}
                 testId="continue-shopping"
@@ -58,9 +57,10 @@ const Cart = ({ history }) => {
                 customClass={buttonClass}
                 onClick={(evt) => {
                   evt.preventDefault();
-                  history.push(ROUTES.CHECKOUT_STEP_ONE);
+                  navigate(ROUTES.CHECKOUT_STEP_ONE);
                 }}
                 size={BUTTON_SIZES.MEDIUM}
+                id="checkout"
                 testId="checkout"
                 type={BUTTON_TYPES.ACTION}
               />
@@ -73,4 +73,4 @@ const Cart = ({ history }) => {
   );
 };
 
-export default withRouter(Cart);
+export default Cart;

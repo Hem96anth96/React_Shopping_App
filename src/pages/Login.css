@@ -1,5 +1,5 @@
 .login_container {
-  background-color: #eefcf6;
+  background-color: #BEDC74;
   min-height: 100vh;
 }
 .login_logo {
@@ -45,7 +45,7 @@
 }
 
 .login_credentials_wrap-inner {
-  background-color: #132322;
+  background-color: #A2CA71;
   overflow: hidden;
   border-bottom-right-radius: 8px;
   border-bottom-left-radius: 8px;

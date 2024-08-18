@@ -1,13 +1,14 @@
 import React from "react";
-import PropTypes from "prop-types";
+
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTimes } from "@fortawesome/free-solid-svg-icons";
 import "./ErrorMessage.css";
 
-const ErrorMessage = ({ isError, errorMessage, onClick, ...props }) => {
+const ErrorMessage = ({ isError,backgroundColor, errorMessage, onClick, ...props }) => {
   return (
     <div
-      className={`error-message-container${isError ? " error" : ""}`}
+      className="error-message-container"
+      style={{ backgroundColor: isError ?  "#e2231a" : backgroundColor}} // Change colors as needed
       {...props}
     >
       {isError && (
@@ -26,21 +27,6 @@ const ErrorMessage = ({ isError, errorMessage, onClick, ...props }) => {
       )}
     </div>
   );
-};
-
-ErrorMessage.propTypes = {
-  /**
-   * If this is an isError field yes or no
-   */
-  isError: PropTypes.bool.isRequired,
-  /**
-   * The value of the input
-   */
-  errorMessage: PropTypes.string.isRequired,
-  /**
-   * The on change handler
-   */
-  onClick: PropTypes.func.isRequired,
 };
 
 export default ErrorMessage;

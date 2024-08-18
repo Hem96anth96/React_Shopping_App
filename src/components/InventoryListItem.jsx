@@ -1,8 +1,7 @@
-import React, { useState } from "react";
-import { withRouter } from "react-router-dom";
-import PropTypes from "prop-types";
+import React, { useState, useEffect } from "react";
+import { useNavigate} from "react-router-dom";
 import { ShoppingCart } from "../utils/shopping-cart";
-import { isErrorUser, isProblemUser } from "../utils/Credentials";
+
 import "./InventoryListItem.css";
 import { ROUTES } from "../utils/Constants";
 import Button, { BUTTON_SIZES, BUTTON_TYPES } from "./Button";
@@ -14,78 +13,46 @@ const InventoryListItem = (props) => {
     desc,
     id,
     image_url,
-    history,
     name,
     price,
+    hint,
   } = props;
-  const [itemInCart, setItemInCart] = useState(ShoppingCart.isItemInCart(id));
-  /**
-   * @TODO:
-   * This can't be tested yet because enzyme currently doesn't support ReactJS17,
-   * see https://github.com/enzymejs/enzyme/issues/2429.
-   * This means we can't fully mount the component and test all rendered components
-   * and functions
-   */
-  /* istanbul ignore next */
-  const addToCart = (itemId) => {
-    if (isProblemUser()) {
-      // Bail out now, don't add to cart if the item ID is odd
-      if (itemId % 2 === 1) {
-        return;
-      }
-    } else if (isErrorUser()) {
-      // Throw an exception. This will be reported to Backtrace
-      if (itemId % 2 === 1) {
-        throw new Error("Failed to add item to the cart.");
-      }
-    }
 
+
+
+const [imageSrc, setImageSrc] = useState(null);
+
+useEffect(() => {
+  const loadImage = async () => {
+    const image = await import(`../assets/img/${image_url}`);
+    setImageSrc(image.default);
+  };
+
+  loadImage();
+}, [image_url]);
+
+  const [itemInCart, setItemInCart] = useState(ShoppingCart.isItemInCart(id));
+  const navigate = useNavigate();
+  const addToCart = (itemId) => {
+    
     ShoppingCart.addItem(itemId);
     setItemInCart(true);
   };
-  /**
-   * @TODO:
-   * This can't be tested yet because enzyme currently doesn't support ReactJS17,
-   * see https://github.com/enzymejs/enzyme/issues/2429.
-   * This means we can't fully mount the component and test all rendered components
-   * and functions
-   */
-  /* istanbul ignore next */
+ 
   const removeFromCart = (itemId) => {
-    if (isProblemUser()) {
-      // Bail out now, don't remove from cart if the item ID is even
-      if (itemId % 2 === 0) {
-        return;
-      }
-    } else if (isErrorUser()) {
-      // Throw an exception. This will be reported to Backtrace
-      if (itemId % 2 === 0) {
-        throw new Error("Failed to remove item from cart.");
-      }
-    }
-
+   
     ShoppingCart.removeItem(itemId);
     setItemInCart(false);
   };
   let linkId = id;
-  if (isProblemUser()) {
-    linkId += 1;
-  }
   const itemLink = `${ROUTES.INVENTORY_LIST}?id=${linkId}`;
 
-  /**
-   * @TODO:
-   * This can't be tested yet because enzyme currently doesn't support ReactJS17,
-   * see https://github.com/enzymejs/enzyme/issues/2429.
-   * This means we can't fully mount the component and test all rendered components
-   * and functions
-   */
-  /* istanbul ignore next */
+  
   const ButtonType = ({ id, item, itemInCart, missAlignButton }) => {
     const label = itemInCart ? "Remove" : "Add to cart";
     const onClick = itemInCart ? () => removeFromCart(id) : () => addToCart(id);
     const type = itemInCart ? BUTTON_TYPES.SECONDARY : BUTTON_TYPES.PRIMARY;
-    const testId = `${label}-${item}`.replace(/\s+/g, "-").toLowerCase();
+  
     const buttonClass = `btn_inventory ${
       missAlignButton ? "btn_inventory_misaligned" : ""
     }`;
@@ -95,7 +62,6 @@ const InventoryListItem = (props) => {
         label={label}
         onClick={onClick}
         size={BUTTON_SIZES.SMALL}
-        testId={testId}
         type={type}
       />
     );
@@ -108,21 +74,19 @@ const InventoryListItem = (props) => {
     <div className="inventory_item" data-test="inventory-item">
       <div className="inventory_item_img">
         <a
-          href="#"
+          href={itemLink}
           id={`item_${id}_img_link`}
           onClick={(evt) => {
             evt.preventDefault();
-            history.push(itemLink);
+            navigate(itemLink, {state: {hint: hint}});
           }}
-          data-test={`item-${id}-img-link`}
+          
         >
           <img
             alt={name}
             className="inventory_item_img"
-            src={require(`../assets/img/${image_url}`).default}
-            data-test={`inventory-item-${name
-              .replace(/\s+/g, "-")
-              .toLowerCase()}-img`}
+            src={imageSrc}
+           
           />
         </a>
       </div>
@@ -132,13 +96,13 @@ const InventoryListItem = (props) => {
       >
         <div className="inventory_item_label">
           <a
-            href="#"
+            href={itemLink}
             id={`item_${id}_title_link`}
             onClick={(evt) => {
               evt.preventDefault();
-              history.push(itemLink);
+             navigate(itemLink, {state: {hint: hint}});
             }}
-            data-test={`item-${id}-title-link`}
+            
           >
             <div className={itemNameClass} data-test="inventory-item-name">
               {name}
@@ -167,41 +131,6 @@ const InventoryListItem = (props) => {
   );
 };
 
-InventoryListItem.propTypes = {
-  /**
-   * The description of the product
-   */
-  desc: PropTypes.string.isRequired,
-  /**
-   * The history
-   */
-  history: PropTypes.shape({
-    push: PropTypes.func.isRequired,
-  }).isRequired,
-  /**
-   * The id of the list item
-   */
-  id: PropTypes.number.isRequired,
-  /**
-   * The url of the image
-   */
-  image_url: PropTypes.string.isRequired,
-  /**
-   * The name of the product
-   */
-  name: PropTypes.string.isRequired,
-  /**
-   * The price of the product
-   */
-  price: PropTypes.number.isRequired,
-  /**
-   * Whether or not the item is aligned right
-   */
-  isTextAlignRight: PropTypes.bool.isRequired,
-  /**
-   * Whether or not the the button is misaligned
-   */
-  missAlignButton: PropTypes.bool.isRequired,
-};
 
-export default withRouter(InventoryListItem);
+
+export default InventoryListItem;

@@ -1,14 +1,13 @@
 import React, { useState } from "react";
-import { withRouter } from "react-router-dom";
-import PropTypes from "prop-types";
-import { isProblemUser } from "../utils/Credentials";
+import { useNavigate } from "react-router-dom";
 import { ROUTES } from "../utils/Constants";
 import { ShoppingCart } from "../utils/shopping-cart";
 import Button, { BUTTON_SIZES, BUTTON_TYPES } from "./Button";
 import "./CartItem.css";
 
-const CartItem = ({ item, history, showButton }) => {
+const CartItem = ({ item, showButton }) => {
   const [itemVisible, setItemVisible] = useState(true);
+  const navigate = useNavigate();
 
   if (!item) {
     // Hide this if the item is invalid
@@ -24,10 +23,6 @@ const CartItem = ({ item, history, showButton }) => {
     const { id, name, desc, price } = item;
     let linkId = id;
 
-    if (isProblemUser()) {
-      linkId += 1;
-    }
-
     const itemLink = `${ROUTES.INVENTORY_LIST}?id=${linkId}`;
 
     return (
@@ -37,11 +32,12 @@ const CartItem = ({ item, history, showButton }) => {
         </div>
         <div className="cart_item_label">
           <a
-            href="#"
+            href={itemLink}
             id={`item_${id}_title_link`}
             onClick={(evt) => {
               evt.preventDefault();
-              history.push(itemLink);
+              //history.push(itemLink);
+              navigate(itemLink);
             }}
             data-test={`item-${id}-title-link`}
           >
@@ -80,30 +76,6 @@ const CartItem = ({ item, history, showButton }) => {
 
   return <div className="removed_cart_item" />;
 };
-CartItem.propTypes = {
-  /**
-   * The item
-   */
-  item: PropTypes.shape({
-    id: PropTypes.number.isRequired,
-    name: PropTypes.string.isRequired,
-    desc: PropTypes.string.isRequired,
-    price: PropTypes.number.isRequired,
-  }),
-  /**
-   * The history
-   */
-  history: PropTypes.shape({
-    push: PropTypes.func.isRequired,
-  }).isRequired,
-  /**
-   * Show the remove button
-   */
-  showButton: PropTypes.bool,
-};
-CartItem.defaultProps = {
-  item: undefined,
-  showButton: false,
-};
 
-export default withRouter(CartItem);
+
+export default CartItem;

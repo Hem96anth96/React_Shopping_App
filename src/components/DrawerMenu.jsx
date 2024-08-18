@@ -1,12 +1,10 @@
 import React from "react";
-import { withRouter } from "react-router-dom";
-import PropTypes from "prop-types";
+import { useNavigate } from "react-router-dom";
+
 import { slide as Menu } from "react-burger-menu";
 import { ShoppingCart } from "../utils/shopping-cart";
 import { ROUTES } from "../utils/Constants";
 import {
-  isProblemUser,
-  isVisualUser,
   removeCredentials,
 } from "../utils/Credentials";
 import menuClosePng from "../assets/img/close.png";
@@ -15,23 +13,24 @@ import menuIconPng from "../assets/img/menu.png";
 import menuIconSvg from "../assets/svg/menu3x.svg";
 import "./DrawerMenu.css";
 
-const DrawerMenu = ({ history }) => {
-  const resetStorage = () => {
+function DrawerMenu() {
+ 
+  const navigate = useNavigate();
+  function resetStorage(){
     // Wipe out our shopping cart now
     ShoppingCart.resetCart();
   };
-  const aboutLink = isProblemUser()
-    ? "https://saucelabs.com/error/404"
-    : "https://saucelabs.com/";
-  const isVisualFailure = isVisualUser();
-  const imageClass = isVisualFailure ? "visual_failure" : "";
+
+
 
   return (
+    
     <Menu
+      
       customBurgerIcon={
         <img
           src={menuIconPng}
-          className={imageClass}
+          
           srcSet={menuIconSvg}
           alt="Open Menu"
           data-test="open-menu"
@@ -40,23 +39,25 @@ const DrawerMenu = ({ history }) => {
       customCrossIcon={
         <img
           src={menuClosePng}
-          className={imageClass}
+
           srcSet={menuCloseSvg}
           alt="Close Menu"
           data-test="close-menu"
         />
       }
-      outerContainerId={"page_wrapper"}
-      pageWrapId={"contents_wrapper"}
+
+      outerContainerId="page_wrapper"
+      pageWrapId="contents_wrapper"
       noOverlay
+     
     >
       <a
         id="inventory_sidebar_link"
         className="menu-item"
-        href="#"
+        href={ROUTES.INVENTORY}
         onClick={(evt) => {
           evt.preventDefault();
-          history.push(ROUTES.INVENTORY);
+          navigate(ROUTES.INVENTORY);
         }}
         data-test="inventory-sidebar-link"
       >
@@ -65,7 +66,7 @@ const DrawerMenu = ({ history }) => {
       <a
         id="about_sidebar_link"
         className="menu-item"
-        href={aboutLink}
+        href="https://www.linkedin.com/in/saihemanth-chowdary-thammineni-44b24a2b6/"
         data-test="about-sidebar-link"
       >
         About
@@ -73,11 +74,11 @@ const DrawerMenu = ({ history }) => {
       <a
         id="logout_sidebar_link"
         className="menu-item"
-        href="#"
+        href={ROUTES.LOGIN}
         onClick={(evt) => {
           evt.preventDefault();
           removeCredentials();
-          history.push(ROUTES.LOGIN);
+          navigate(ROUTES.LOGIN);
         }}
         data-test="logout-sidebar-link"
       >
@@ -86,25 +87,27 @@ const DrawerMenu = ({ history }) => {
       <a
         id="reset_sidebar_link"
         className="menu-item"
-        href="#"
+        href={window.location.href}
         onClick={(evt) => {
           evt.preventDefault();
           resetStorage();
+
+          window.location.reload();
+          
+
+        // need to refresh page to reflect the change in button's label 
+        // or storage items in respective pages.
+       
+          
         }}
         data-test="reset-sidebar-link"
       >
         Reset App State
       </a>
     </Menu>
+    
   );
 };
-DrawerMenu.propTypes = {
-  /**
-   * The history
-   */
-  history: PropTypes.shape({
-    push: PropTypes.func.isRequired,
-  }).isRequired,
-};
 
-export default withRouter(DrawerMenu);
+
+export default DrawerMenu;

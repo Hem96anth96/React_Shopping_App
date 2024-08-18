@@ -8,7 +8,7 @@ const SwagLabsFooter = () => {
       <ul className="social">
         <li className="social_twitter">
           <a
-            href="https://twitter.com/saucelabs"
+            href="https://en.wikipedia.org/wiki/Family_Guy"
             target="_blank"
             rel="noreferrer"
             data-test="social-twitter"
@@ -18,7 +18,7 @@ const SwagLabsFooter = () => {
         </li>
         <li className="social_facebook">
           <a
-            href="https://www.facebook.com/saucelabs"
+            href="https://en.wikipedia.org/wiki/Family_Guy"
             target="_blank"
             rel="noreferrer"
             data-test="social-facebook"
@@ -28,7 +28,7 @@ const SwagLabsFooter = () => {
         </li>
         <li className="social_linkedin">
           <a
-            href="https://www.linkedin.com/company/sauce-labs/"
+            href="https://en.wikipedia.org/wiki/Family_Guy"
             target="_blank"
             rel="noreferrer"
             data-test="social-linkedin"
@@ -39,8 +39,7 @@ const SwagLabsFooter = () => {
       </ul>
 
       <div className="footer_copy" data-test="footer-copy">
-        &copy; {new Date().getFullYear()} Sauce Labs. All Rights Reserved. Terms
-        of Service | Privacy Policy
+        &copy; {new Date().getFullYear()} Rhode Island. All Wrongs Deserved. 
       </div>
       {/* </div> */}
     </footer>

@@ -1,7 +1,5 @@
-import React from "react";
-import { withRouter } from "react-router-dom";
-import PropTypes from "prop-types";
-import { isErrorUser, isProblemUser } from "../utils/Credentials";
+import React, { useEffect } from "react";
+import { useNavigate, useLocation} from "react-router-dom";
 import { ROUTES } from "../utils/Constants";
 import { ShoppingCart } from "../utils/shopping-cart";
 import { InventoryData } from "../utils/InventoryData";
@@ -11,18 +9,26 @@ import HeaderContainer from "../components/HeaderContainer";
 import Button, { BUTTON_SIZES, BUTTON_TYPES } from "../components/Button";
 import "./CheckOutStepTwo.css";
 
-const CheckOutStepTwo = ({ history }) => {
-  const clearCart = () => {
-    /* istanbul ignore else */
-    // No cart clear on order complete for the problem user
-    if (isProblemUser()) {
-      return;
-    } else if (isErrorUser()) {
-      // An unfortunate typo! This will be reported to Backtrace
-      ShoppingCart.cesetRart();
-      return;
+const CheckOutStepTwo = () => {
+
+  const navigate = useNavigate();
+  const location = useLocation();
+
+
+   useEffect(() => {
+    if (!location.state) {
+      // If state is not available, redirect to the checkout step one page
+     navigate(ROUTES.CHECKOUT_STEP_ONE);
     }
-    // Wipe out our shopping cart
+  }, [location.state, navigate]);
+
+
+  const userName = location.state?.userName || '';
+  const postalCode = location.state?.postalCode || '';
+
+  const clearCart = () => {
+   
+   // Wipe out our shopping cart
     ShoppingCart.resetCart();
   };
   const contents = ShoppingCart.getCartContents();
@@ -30,10 +36,7 @@ const CheckOutStepTwo = ({ history }) => {
 
   for (const curItem in contents) {
     orderTotal = orderTotal + InventoryData[contents[curItem]].price;
-    if (isProblemUser()) {
-      // double up for the problem user
-      orderTotal = orderTotal + InventoryData[contents[curItem]].price;
-    }
+    
   }
 
   const orderTax = (orderTotal * 0.08).toFixed(2);
@@ -79,13 +82,13 @@ const CheckOutStepTwo = ({ history }) => {
                 className="summary_info_label"
                 data-test="shipping-info-label"
               >
-                Shipping Information:
+                Shipping Information: {postalCode}
               </div>
               <div
                 className="summary_value_label"
                 data-test="shipping-info-value"
               >
-                Free Pony Express Delivery!
+                Free Express Delivery to you {userName} !
               </div>
               <div className="summary_info_label" data-test="total-info-label">
                 Price Total
@@ -110,7 +113,7 @@ const CheckOutStepTwo = ({ history }) => {
                   label="Cancel"
                   onClick={(evt) => {
                     evt.preventDefault();
-                    history.push(ROUTES.INVENTORY);
+                    navigate(ROUTES.INVENTORY);
                   }}
                   size={BUTTON_SIZES.MEDIUM}
                   testId="cancel"
@@ -122,10 +125,11 @@ const CheckOutStepTwo = ({ history }) => {
                   onClick={(evt) => {
                     evt.preventDefault();
                     clearCart();
-                    history.push(ROUTES.CHECKOUT_COMPLETE);
+                   navigate(ROUTES.CHECKOUT_COMPLETE,{ state: {userName:userName} });
                   }}
                   size={BUTTON_SIZES.MEDIUM}
                   testId="finish"
+                  id="finish"
                   type={BUTTON_TYPES.ACTION}
                 />
               </div>
@@ -137,13 +141,5 @@ const CheckOutStepTwo = ({ history }) => {
     </div>
   );
 };
-CheckOutStepTwo.propTypes = {
-  /**
-   * The history
-   */
-  history: PropTypes.shape({
-    push: PropTypes.func.isRequired,
-  }).isRequired,
-};
 
-export default withRouter(CheckOutStepTwo);
+export default CheckOutStepTwo;

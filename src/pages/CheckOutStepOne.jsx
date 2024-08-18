@@ -1,21 +1,23 @@
 import React, { useState } from "react";
-import { withRouter } from "react-router-dom";
-import PropTypes from "prop-types";
-import { isProblemUser, isErrorUser } from "../utils/Credentials";
+import { useNavigate } from "react-router-dom";
+
+
 import { ROUTES } from "../utils/Constants";
 import SwagLabsFooter from "../components/Footer";
 import HeaderContainer from "../components/HeaderContainer";
-import InputError, { INPUT_TYPES } from "../components/InputError";
+import InputError from "../components/InputError";
 import ErrorMessage from "../components/ErrorMessage";
 import SubmitButton from "../components/SubmitButton";
 import Button, { BUTTON_SIZES, BUTTON_TYPES } from "../components/Button";
 import "./CheckOutStepOne.css";
 
-const CheckOutStepOne = ({ history }) => {
+const CheckOutStepOne = () => {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [postalCode, setPostalCode] = useState("");
   const [error, setError] = useState("");
+
+  const navigate = useNavigate();
   const dismissError = () => {
     setError("");
   };
@@ -23,14 +25,6 @@ const CheckOutStepOne = ({ history }) => {
     setFirstName(evt.target.value);
   };
   const handleLastNameChange = (evt) => {
-    if (isProblemUser()) {
-      // Overwrite the firstname also
-      return setFirstName(evt.target.value);
-    } else if (isErrorUser()) {
-      // Fail here with TypeError. This will be reported to Backtrace
-      return setLastName(evt.totallyUndefined.value);
-    }
-
     setLastName(evt.target.value);
   };
   const handlePostalCodeChange = (evt) => {
@@ -40,20 +34,28 @@ const CheckOutStepOne = ({ history }) => {
     evt.preventDefault();
 
     if (!firstName) {
-      return setError("First Name is required");
+      setError("First Name is required");
+      return; 
     }
 
-    // Allow to pass for error_user without lastName, as it is impossible to set (errors are thrown)
-    if (!lastName && !isErrorUser()) {
-      return setError("Last Name is required");
+  
+    if (!lastName) {
+      setError("Last Name is required");  
+      return;
     }
 
     if (!postalCode) {
-      return setError("Postal Code is required");
+       setError("Postal Code is required");
+       return;
     }
 
-    // If we're here, we have our required info. Redirect!
-    history.push(ROUTES.CHECKOUT_STEP_TWO);
+ // If we're here, we have our required info. Redirect!
+ navigate(ROUTES.CHECKOUT_STEP_TWO, { 
+  state: { 
+    userName: firstName.charAt(0).toUpperCase() + firstName.slice(1).toLowerCase(), 
+    postalCode: postalCode 
+  } 
+});
 
     return "";
   };
@@ -72,7 +74,7 @@ const CheckOutStepOne = ({ history }) => {
               <div className="checkout_info">
                 <InputError
                   isError={Boolean(error)}
-                  type={INPUT_TYPES.TEXT}
+                  type="text"
                   value={firstName}
                   onChange={handleFirstNameChange}
                   testId="firstName"
@@ -84,7 +86,7 @@ const CheckOutStepOne = ({ history }) => {
                 />
                 <InputError
                   isError={Boolean(error)}
-                  type={INPUT_TYPES.TEXT}
+                  type="text"
                   value={lastName}
                   onChange={handleLastNameChange}
                   testId="lastName"
@@ -96,7 +98,7 @@ const CheckOutStepOne = ({ history }) => {
                 />
                 <InputError
                   isError={Boolean(error)}
-                  type={INPUT_TYPES.TEXT}
+                  type="text"
                   value={postalCode}
                   onChange={handlePostalCodeChange}
                   testId="postalCode"
@@ -110,6 +112,7 @@ const CheckOutStepOne = ({ history }) => {
                   isError={Boolean(error)}
                   errorMessage={`Error: ${error}`}
                   onClick={dismissError}
+                  backgroundColor = "#A2CA71"
                 />
               </div>
               <div className="checkout_buttons">
@@ -120,7 +123,7 @@ const CheckOutStepOne = ({ history }) => {
                   label="Cancel"
                   onClick={(evt) => {
                     evt.preventDefault();
-                    history.push(ROUTES.CART);
+                    navigate(ROUTES.CART);
                   }}
                   size={BUTTON_SIZES.MEDIUM}
                   testId="cancel"
@@ -140,13 +143,6 @@ const CheckOutStepOne = ({ history }) => {
     </div>
   );
 };
-CheckOutStepOne.propTypes = {
-  /**
-   * The history
-   */
-  history: PropTypes.shape({
-    push: PropTypes.func.isRequired,
-  }).isRequired,
-};
 
-export default withRouter(CheckOutStepOne);
+
+export default CheckOutStepOne;

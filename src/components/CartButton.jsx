@@ -1,25 +1,27 @@
-import React, { useEffect, useState } from "react";
-import { withRouter } from "react-router-dom";
-import PropTypes from "prop-types";
+import React, { useEffect, useState, useMemo } from "react";
+import { useNavigate } from "react-router-dom";
+// import { withRouter } from "react-router-dom"; older version v5 usage.
 import { ShoppingCart } from "../utils/shopping-cart";
 import { ROUTES } from "../utils/Constants";
 import "./CartButton.css";
 
-const CartButton = (props) => {
-  const { history } = props;
+const CartButton = () => {
+  //const { history } = props;
+
+  const navigate = useNavigate();
+  
   let cartBadge = "";
-  const [cartContents, setCartContents] = useState(
+  const [cartContents, setCartContent] = useState(
     ShoppingCart.getCartContents()
   );
-  // Strangely enough this is being called, but not covered in the report
-  /* istanbul ignore next */
-  const cartListener = {
-    forceUpdate: () => setCartContents(ShoppingCart.getCartContents()),
-  };
 
+  const cartListener = useMemo(() => ({
+    forceUpdate: () => setCartContent(ShoppingCart.getCartContents()),
+  }), []);
+  
   useEffect(() => {
     ShoppingCart.registerCartListener(cartListener);
-  }, []);
+  }, [cartListener]);
 
   if (cartContents.length > 0) {
     cartBadge = (
@@ -31,8 +33,10 @@ const CartButton = (props) => {
 
   return (
     <a
+      href={ROUTES.CART}
       className="shopping_cart_link"
-      onClick={() => history.push(ROUTES.CART)}
+  // onClick={() => history.push(ROUTES.CART)}
+      onClick={() => navigate(ROUTES.CART)}
       data-test="shopping-cart-link"
     >
       {cartBadge}
@@ -40,13 +44,4 @@ const CartButton = (props) => {
   );
 };
 
-CartButton.propTypes = {
-  /**
-   * The history
-   */
-  history: PropTypes.shape({
-    push: PropTypes.func.isRequired,
-  }).isRequired,
-};
-
-export default withRouter(CartButton);
+export default CartButton;

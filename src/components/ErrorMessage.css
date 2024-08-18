@@ -1,5 +1,4 @@
 .error-message-container {
-  background-color: #ffffff;
   height: 45px;
   margin-bottom: 5px;
   margin-top: -10px;
@@ -12,9 +11,6 @@
   justify-content: center;
 }
 
-.error-message-container.error {
-  background-color: #e2231a;
-}
 
 .error-message-container h3 {
   color: #ffffff;

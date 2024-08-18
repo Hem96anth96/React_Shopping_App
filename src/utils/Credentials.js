@@ -13,7 +13,6 @@ export function verifyCredentials(username, password) {
   if (password !== VALID_PASSWORD) {
     return false;
   }
-
   return VALID_USERNAMES.includes(username);
 }
 
@@ -47,41 +46,6 @@ export function currentUser() {
   return Cookies.get(SESSION_USERNAME);
 }
 
-/**
- * Check if this is a problem user
- *
- * @return {boolean}
- */
-export function isProblemUser() {
-  return Cookies.get(SESSION_USERNAME) === "problem_user";
-}
-
-/**
- * Check if this is a performance user
- *
- * @return {boolean}
- */
-export function isPerformanceGlitchUser() {
-  return Cookies.get(SESSION_USERNAME) === "performance_glitch_user";
-}
-
-/**
- * Check if this a logged out user
- *
- * @return {boolean}
- */
-export function isLockedOutUser() {
-  return Cookies.get(SESSION_USERNAME) === "locked_out_user";
-}
-
-/**
- * Check if this is an error user
- *
- * @return {boolean}
- */
-export function isErrorUser() {
-  return Cookies.get(SESSION_USERNAME) === "error_user";
-}
 
 /**
  * Check if the user is logged in with a valid username
@@ -92,14 +56,7 @@ export function isLoggedIn() {
   const sessionUsername = Cookies.get(SESSION_USERNAME);
   const isValidUsername = VALID_USERNAMES.includes(sessionUsername);
 
-  return isValidUsername && sessionUsername !== "locked_out_user";
+  return isValidUsername;
 }
 
-/**
- * Check if this is a visual user
- *
- * @return {boolean}
- */
-export function isVisualUser() {
-  return Cookies.get(SESSION_USERNAME) === "visual_user";
-}
+

@@ -1,13 +1,8 @@
 export const FONT_FAMILY = "Roboto, Arial, Helvetica, sans-serif";
 export const VALID_USERNAMES = [
-  "standard_user",
-  "locked_out_user",
-  "problem_user",
-  "performance_glitch_user",
-  "error_user",
-  "visual_user",
+  "Family_Guy",
 ];
-export const VALID_PASSWORD = "secret_sauce";
+export const VALID_PASSWORD = "Spooner_Street";
 export const ROUTES = {
   LOGIN: "/",
   INVENTORY: "/inventory.html",

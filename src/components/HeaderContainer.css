@@ -1,16 +1,16 @@
 .header_container {
-  border-bottom: 1px solid #ededed;
+  
   display: flex;
   flex-direction: column;
 }
 
 .primary_header {
-  border-bottom: 1px solid #ededed;
+  border-bottom: 1px solid #080000;
   height: 56px;
 }
 
 .primary_header .header_label {
-  background: #fff;
+  background: #F6E96B;
   padding: 4px 0;
   text-align: center;
   font-size: 24px;
@@ -41,7 +41,7 @@
 }
 
 .header_secondary_container {
-  background: #fff;
+  background: #F6E96B;
   width: 100%;
   height: 56px;
   display: flex;

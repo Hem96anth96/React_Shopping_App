@@ -1,5 +1,5 @@
 .cart_contents_container {
-  background-color: #fff;
+  background-color: #A2CA71;
   max-width: 1280px;
   margin: 0 auto;
   padding: 0 15px 30px;
@@ -12,9 +12,14 @@
   line-height: 24px;
   font-family: "DM Mono", sans-serif;
   padding: 20px 0;
-  background-color: #fff;
+  background-color: #A2CA71;
   color: #484c55;
   width: 80px;
+}
+
+.cart_item {
+
+  background-color: #A2CA71;
 }
 
 .cart_desc_label {

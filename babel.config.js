@@ -2,9 +2,9 @@ module.exports = {
     presets: [
         ['@babel/preset-env', {
             targets: {
-                node: 12
+                node: 21.7
             }
         }]
     ],
-    plugins: ['@babel/plugin-proposal-private-methods']
+    plugins: ['@babel/plugin-transform-private-methods']
 };
